@@ -9,16 +9,41 @@
 var multipart = require('./multipart');
 var template = require('./template');
 var http = require('http');
+var fileserver = require('./lib/fileserver');
 var url = require('url');
 var fs = require('fs');
 var port = 3000;
+var sqlite3 = require('sqlite3');
 
 /* load cached files */
 var config = JSON.parse(fs.readFileSync('config.json'));
 var stylesheet = fs.readFileSync('public/catalog.css');
 
-template.loadDir('templates');
+fileserver.loadDir('public');
 
+var db = new sqlite3.Database('catalog.sqlite3', function(err) {
+  if(err) console.error(err);
+});
+
+var db = new sqlite3.Database('catalog.sqlite3');
+
+db.serialize(function() {
+  // db.run("DROP TABLE albums");
+  db.run("CREATE TABLE IF NOT EXISTS albums (id INTEGER PRIMARY KEY, name TEXT, description TEXT, image TEXT)");
+
+  // db.run("INSERT INTO albums (name, description, image) values ('To Pimp A Butterfly', 'Kendrick Lamars Album', 'topimpabutterfly.png')");
+  // db.run("INSERT INTO albums (name, description, image) values ('2014 Forest Hills Drive', 'J Coles Album', 'ForestHillsDrive.jpg')");
+  // db.run("INSERT INTO albums (name, description, image) values ('RTJ3', 'Run The Jewels 3', 'rtj3.jpg')");
+
+  // db.each("SELECT id, name FROM albums", function(err, row) {
+  //     if(err) return console.error(err);
+  //     console.log(row);
+  // });
+});
+
+var router = new (require('./lib/route')).Router(db);
+
+template.loadDir('templates');
 
 /** @function serveCatalog
  * A function to serve a HTML page representing a
@@ -224,7 +249,24 @@ function handleRequest(req, res) {
 
 
 /* Create and launch the webserver */
-var server = http.createServer(handleRequest);
+var album = require('./album');
+router.resource('/albums', album);
+// router.addRoute();
+
+var server = new http.Server(function(req, res) {
+  // Remove the leading '/' from the resource url
+  var resource = req.url.slice(1);
+  // If no resource is requested, serve the cached index page.
+  if(resource == '')
+    fileserver.serveFile('public/index.html', req, res);
+  // If the resource is cached in the fileserver, serve it
+  else if(fileserver.isCached(resource))
+    fileserver.serveFile(resource, req, res);
+  // Otherwise, route the request
+  else router.route(req, res);
+});
+
+// var server = http.createServer(handleRequest);
 server.listen(port, function() {
-  console.log("Server is listening on localhost:" + port + "/catalog");
+  console.log("Server is listening on localhost:" + port);
 });
