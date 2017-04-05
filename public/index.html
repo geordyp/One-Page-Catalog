@@ -2,17 +2,45 @@
 <html>
   <head>
     <title>Simple Catalog</title>
-    <!-- <link href="catalog.css" rel="stylesheet" type="text/css"> -->
+    <link href="public/catalog.css" rel="stylesheet" type="text/css">
   </head>
   <body>
     <div class="container">
       <header style="text-align:center;">
         <h1>Simple Catalog</h1>
-        <p><a href="upload">Upload Item</a></p>
       </header>
       <main>
-        <ul id="item-list">
-        </ul>
+        <div class="stage">
+          <div class="stage-left">
+            <ul id="album-list">
+            </ul>
+          </div>
+          <div class="stage-right">
+            <div id="album-info">
+            </div>
+          </div>
+        </div>
+        <div id="upload">
+          <h3>Add an Item to The Simple Catalog</h3>
+          <form action="" method="POST" enctype="multipart/form-data">
+            <label for="name">Name:
+              <input id="inputName" type="text" name="name">
+            </label>
+            <br><br>
+
+            <label for="description">Description:
+              <input id="inputDescription" type="text" name="description">
+            </label>
+            <br><br>
+
+            <label for="image">Image:
+              <input id="inputImage" type="file" name="image">
+            </label>
+            <br><br><br>
+
+            <input type="submit" onclick="AddAlbum()" value="Upload Item">
+          </form>
+        </div>
       </main>
     </div>
 

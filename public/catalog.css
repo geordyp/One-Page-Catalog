@@ -17,9 +17,13 @@ a {
   text-decoration: none;
 }
 
+li {
+  cursor: pointer;
+}
+
 .container {
   max-width: 810px;
-  width: 80%;
+  width: 95%;
   margin-left: auto;
   margin-right: auto;
   padding: 25px;
@@ -41,6 +45,20 @@ a {
   width: 500px;
   height: auto;
   padding: 10px;
+}
+
+.stage {
+  width: 100%;
+  position: relative;
+  display: flex;
+}
+
+.stage-left {
+  width: 30%;
+}
+
+.stage-right {
+  width: 70%;
 }
 
 /*media query to center single column*/
